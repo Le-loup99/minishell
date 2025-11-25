@@ -6,12 +6,13 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 10:54:52 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/11/06 17:09:07 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/11/25 15:21:55 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+#include "minishell.h"
 #include <stdio.h>
+#include <string.h>
 
 int count_cmd(char *str)
 {
@@ -45,6 +46,8 @@ int count_cmd(char *str)
 		if (str[i] == ' ' && str[i + 1] != ' ' && str[i + 1] != 0
 			&& quote == 0)
 			count++;
+		if ((str[i] == '|' || str[i] == '<' || str[i] == '>' || str[i] == '(' || str[i] == ')') && quote == 0)
+			count+= 2;
 		i++;
 	}
 	printf("%d", count);
@@ -116,7 +119,25 @@ char *get_cmd(char *str, char *tmp, int *i)
 		copy_operator_in_quote(str, tmp, i);
 		return (tmp);
 	}
-	while (str[*i] == '<' || str[*i] == '>')
+	if (str[*i] == '<' || str[*i] == '>')
+	{
+		while ((str[*i] == '<' || str[*i] == '>') && j < 2)
+		{
+			tmp[j] = str[*i];
+			(*i)++;
+			j++;
+		}
+	}
+	else if (str[*i] == '|' && j < 2)
+	{
+		while(str[*i] == '|' && j < 2)
+		{
+			tmp[j] = str[*i];
+			(*i)++;
+			j++;
+		}
+	}
+	else if ((str[*i] == '(' || str[*i] == ')') && j < 2)
 	{
 		tmp[j] = str[*i];
 		(*i)++;
@@ -128,7 +149,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 	{
 		if (tmp[0] && (str[*i] == '\'' || str[*i] == '"') && *i != 0)
 		{
-			if ((str[(*i) + 1] == ' ' || !str[(*i) + 1]) && str[(*i) - 1] == ' ')
+			if ((str[(*i) + 1] == ' ' || !str[(*i) + 1]) && str[(*i) - 1] == ' ' && quote == 0)
 			{
 				printf("%s", tmp);
 				return (tmp);
@@ -136,129 +157,91 @@ char *get_cmd(char *str, char *tmp, int *i)
 			if ((quote == 1 && str[*i] == '\'') || (quote == 2 && str[*i] == '"'))
 			{
 				quote = 0;
-				(*i)++;
+				tmp[j] = str[*i];
+				j++;
+				if (str[*i])
+					(*i)++;
 			}
 			else if (quote == 0 && str[(*i)] == '\'')
 			{
 				quote = 1;
-				(*i)++;
+				tmp[j] = str[*i];
+				j++;
+				if (str[*i])
+					(*i)++;
 			}
 			else if (quote == 0 && str[*i] == '"')
 			{
 				quote = 2;
-				(*i)++;
+				tmp[j] = str[*i];
+				j++;
+				if (str[*i])
+					(*i)++;
 			}
 			else
 			{
-				tmp[j] = str[(*i)];
-				(*i)++;
+				tmp[j] = str[*i];
 				j++;
+				if (str[*i])
+					(*i)++;
 			}
 		}
 		if (str[*i] == '"' && quote == 0)
 		{
 			quote = 2;
-			(*i)++;
 		}
 		else if (str[*i] == '\'' && quote == 0)
 		{
 			quote = 1;
-			(*i)++;
 		}
-		if (str[*i] == '"' && quote == 2)
+		else if (str[*i] == '"' && quote == 2)
 		{
 			if (str[(*i) + 1] == ' ' || str[(*i) + 1] == 0)
 			{
-				(*i)++;
+				tmp[j] = str[*i];
+				j++;
+				if (str[*i])
+					(*i)++;
 				printf("%s", tmp);
 				return (tmp);
 			}
 			quote = 0;
-			(*i)++;
 		}
 		else if (str[*i] == '\'' && quote == 1)
 		{
 			if (str[(*i) + 1] == ' ' || str[(*i) + 1] == 0)
 			{
-				(*i)++;
+				tmp[j] = str[*i];
+				j++;
+				if (str[*i])
+					(*i)++;
 				printf("%s", tmp);
 				return (tmp);
 			}
 			quote = 0;
-			(*i)++;
 		}
-		if (str[*i] == '"' && quote == 0)
-		{
-			quote = 2;
-			(*i)++;
-		}
-		else if (str[*i] == '\'' && quote == 0)
-		{
-			quote = 1;
-			(*i)++;
-		}
-		if ((str[*i] == ' ' || (str[*i] == '<' || str[*i] == '>')) && quote == 0)
+		if ((str[*i] == ' ' || (str[*i] == '<' || str[*i] == '>' || str[*i] == '|'
+			|| str[*i] == '(' || str[*i] == ')')) && quote == 0)
 		{
 			printf("eto %s", tmp);
 			return (tmp);
 		}
-		/*if ((str[((*i) - 1)] == '\'' || str[(*i) - 1] == '"') || (str[*i] == '<' && str[*i] == '>'))
+		if ((str[((*i) - 1)] == '\'' || str[(*i) - 1] == '"') || (str[*i] == '<' && str[*i] == '>'))
 		{
 			if (operator_alone_in_quote(str, (*i) - 1))
 			{
 				(*i)--;
 				get_cmd(str, tmp, i);
 			}
-		}*/
-		if ((str[*i] != '\'' || quote != 1) && (str[*i] != '"' || quote != 2))
-		{
-			tmp[j] = str[*i];
-			j++;
-			if (str[*i])
-				(*i)++;
 		}
+		tmp[j] = str[*i];
+		j++;
+		if (str[*i])
+			(*i)++;
 	}
 	printf("%s", tmp);
 	return (tmp);
 }
-
-// void	move_index(char *str, int *i, int check)
-// {
-// 	while(str[*i] == ' ')
-// 		(*i)++;
-// 	if (str[*i] == '"')
-// 	{
-// 		(*i)++;
-// 		while (str[*i] && str[*i] != '"' && (str[*i] != ' ' || !(check % 2)))
-// 			(*i)++;
-// 		if (str[*i] && str[(*i) + 1] != ' ' && (str[*i] != ' ' || !(check % 2)))
-// 			move_index(str , i, ++check);
-// 		if (str[*i] == '"')
-// 			(*i) += 1;
-// 		return ;
-// 	}
-// 	else if (str[*i] == '\'')
-// 	{
-// 		(*i)++;
-// 		while (str[*i] && str[*i] != '\'' && (str[*i] != ' ' || !(check % 2)))
-// 			(*i)++;
-// 		// if (str[*i] && str[(*i) + 1] != ' ')
-// 		// 	move_index(str, i, ++check);
-// 		if (str[*i] && str[(*i) + 1] != ' ' && (str[*i] != ' ' || !(check % 2)))
-// 			move_index(str , i, ++check);
-// 		if (str[*i] == '\'')
-// 			(*i) += 1;
-// 		return ;
-// 	}
-// 	else
-// 	{
-// 		while (str[*i] && str[*i] != ' ' && str[*i] != '\'' && str[*i] != '"')
-// 			(*i)++;
-// 		if (str[*i] == '\'' || str[*i] == '"')
-// 			move_index(str, i, ++check);
-// 	}
-// 	return ;
-// }
 
 char **cmd(char *str)
 {
@@ -266,10 +249,13 @@ char **cmd(char *str)
 	char	**all_cmd;
 	int		i;
 	int		stock_index;
+	char	**cleared;
 
 	stock_index = 0;
 	i = 0;
 	all_cmd = malloc(sizeof(char *) * count_cmd(str));
+	cleared = malloc(sizeof(char *) * count_cmd(str));
+	tmp = NULL;
 	while (str[i])
 	{
 		tmp = malloc(sizeof(char ) * ft_strlen(str));
@@ -277,30 +263,37 @@ char **cmd(char *str)
 			i++;
 		get_cmd(str, tmp, &i);
 		printf("%s\n", tmp);
-		// move_index(str, &i, 0);
-		all_cmd[stock_index] = tmp;
+		all_cmd[stock_index] = tmp; // mila soloina
 		stock_index++;
 	}
 	i = 0;
-	// while (*all_cmd[i])
-	// {
-		printf("\n0 = %s", all_cmd[0]);
-		printf("\n1 = %s", all_cmd[1]);
-		printf("\n2 = %s", all_cmd[2]);
-		printf("\n3 = %s", all_cmd[3]);
-		printf("\n4 = %s", all_cmd[4]);
-		printf("\n5 = %s", all_cmd[6]);
-	// 	i++;
-	// }
+	while (all_cmd[i] && *all_cmd[i])
+	{
+		cleared[i] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]));
+		printf("\n%d = %s\n", i, all_cmd[i]);
+		quote_clearer(all_cmd[i], cleared[i]); // aza adino no manova fonction an'ilay maka liste
+		i++;
+		// printf(" %d ", quote_handler(all_cmd[0]));
+	}
 	return(all_cmd);
 }
 int main()
 {
-	char *str = "ls'' <''| grep kaiza";
-	char *tmp;
+	// char *test = "LESS";char *str = "echo \"   \"  ' '";
+	char *str = "test \"hello;world\" '&&' foo|bar";
+	printf("\n%d\n", count_cmd(str));
+	// char *tmp;
+	// tmp = converter(str);
+	// printf("\n%s\n", tmp);
 
-	tmp = NULL;
+	// tmp = NULL;
 	cmd(str);
 }
+// eto||||()() grep kaiza
 // "ls -l ''<''| grep kaiza"
 // ''
+// 'kaiza' \"\"\"lesy\" 
+// (), >, |, ||
+// kaiza \"<\"lesy
+// char *str = "echo \"hello;world\" '&&' foo|bar";
+// char *str = "echo \"a 'b' c\"' d \"e\" f' g\"h 'i' j\"k";
