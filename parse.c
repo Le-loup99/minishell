@@ -275,19 +275,24 @@ char **cmd(char *str)
 		i++;
 		// printf(" %d ", quote_handler(all_cmd[0]));
 	}
-	return(all_cmd);
+	return(cleared);
 }
 int main()
 {
+	t_cmd *lst;
+	char **stock;
 	// char *test = "LESS";char *str = "echo \"   \"  ' '";
 	char *str = "test \"hello;world\" '&&' foo|bar";
+	// lst->cmd = NULL;
+	// lst = NULL;
 	printf("\n%d\n", count_cmd(str));
 	// char *tmp;
 	// tmp = converter(str);
 	// printf("\n%s\n", tmp);
 
 	// tmp = NULL;
-	cmd(str);
+	stock = cmd(str);
+	cmd_to_lst(stock , lst);
 }
 // eto||||()() grep kaiza
 // "ls -l ''<''| grep kaiza"
