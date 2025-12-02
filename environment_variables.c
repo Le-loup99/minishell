@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 08:50:40 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/11/25 14:05:44 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/02 17:10:39 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 void	to_convert(char *str, char *stock, int len)
 {
 	int	i;
-	// int	len;
-
-	// len = 0;
 	i = 0;
-	// e*stock = malloc (len + 1);
-	// while(str[len] != '\'' && str[len] != '"' && str[len] != ' ')
-	// 	len++;
 	while(i < len)
 	{
 		stock[i] = str[i];
@@ -59,4 +53,27 @@ char *converter(char *str, int *i)
 		(*i)++;
 	printf("\n%s\n", converted);
 	return (converted);
+}
+int	calcul_env_size(char *str)
+{
+	int		i;
+	int		j;
+	int		len;
+	char	*stock;
+
+	i = 0;
+	len = 0;
+	j = 0;
+	while(str[i] != '$')
+		i++;
+	i++;
+	while(str[len + (i)] && str[len + (i)] != '\'' && str[len + i] != '"' && str[len + i + 1] != ' ')
+		len++;
+	while(str[len + j])
+		j++;
+	stock = malloc(len + 1);
+	to_convert(str + i, stock, len);
+	len = ft_strlen(getenv(stock));
+	free(stock);
+	return (len + i + j);
 }

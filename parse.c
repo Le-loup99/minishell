@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 10:54:52 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/11/25 15:21:55 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/02 17:14:55 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,7 @@ int count_cmd(char *str)
 			count+= 2;
 		i++;
 	}
-	printf("%d", count);
-	return (count);
+	return (count + 1);
 }
 
 int ft_strlen(char *str)
@@ -97,12 +96,14 @@ void copy_operator_in_quote(char *str, char *tmp, int *i)
 		{
 			tmp[j] = str[*i];
 			(*i)++;
+			tmp[j + 1] = '\0';
 			return ;
 		}
 		tmp[j] = str[*i];
 		j++;
 		(*i)++;
 	}
+	tmp[j + 1] = '\0';
 	return ;
 }
 
@@ -127,6 +128,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 			(*i)++;
 			j++;
 		}
+		tmp[j] = '\0';
 	}
 	else if (str[*i] == '|' && j < 2)
 	{
@@ -136,6 +138,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 			(*i)++;
 			j++;
 		}
+		tmp[j] = '\0';
 	}
 	else if ((str[*i] == '(' || str[*i] == ')') && j < 2)
 	{
@@ -147,11 +150,12 @@ char *get_cmd(char *str, char *tmp, int *i)
 		return (tmp);
 	while(str[*i])
 	{
-		if (tmp[0] && (str[*i] == '\'' || str[*i] == '"') && *i != 0)
+		if ((str[*i] == '\'' || str[*i] == '"') && *i != 0)
 		{
 			if ((str[(*i) + 1] == ' ' || !str[(*i) + 1]) && str[(*i) - 1] == ' ' && quote == 0)
 			{
 				printf("%s", tmp);
+				tmp[j + 1] = '\0';
 				return (tmp);
 			}
 			if ((quote == 1 && str[*i] == '\'') || (quote == 2 && str[*i] == '"'))
@@ -203,6 +207,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 				if (str[*i])
 					(*i)++;
 				printf("%s", tmp);
+				tmp[j] = '\0';
 				return (tmp);
 			}
 			quote = 0;
@@ -216,6 +221,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 				if (str[*i])
 					(*i)++;
 				printf("%s", tmp);
+				tmp[j] = '\0';
 				return (tmp);
 			}
 			quote = 0;
@@ -223,6 +229,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 		if ((str[*i] == ' ' || (str[*i] == '<' || str[*i] == '>' || str[*i] == '|'
 			|| str[*i] == '(' || str[*i] == ')')) && quote == 0)
 		{
+			tmp[j] = '\0';
 			printf("eto %s", tmp);
 			return (tmp);
 		}
@@ -239,6 +246,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 		if (str[*i])
 			(*i)++;
 	}
+	tmp[j] = '\0';
 	printf("%s", tmp);
 	return (tmp);
 }
@@ -253,12 +261,12 @@ char **cmd(char *str)
 
 	stock_index = 0;
 	i = 0;
-	all_cmd = malloc(sizeof(char *) * count_cmd(str));
-	cleared = malloc(sizeof(char *) * count_cmd(str));
+	all_cmd = malloc(sizeof(char *) * (count_cmd(str)));
+	cleared = malloc(sizeof(char *) * (count_cmd(str)));
 	tmp = NULL;
 	while (str[i])
 	{
-		tmp = malloc(sizeof(char ) * ft_strlen(str));
+		tmp = malloc(sizeof(char ) * ft_strlen(str) + 1 + 1);
 		while (str[i] == ' ')
 			i++;
 		get_cmd(str, tmp, &i);
@@ -266,15 +274,25 @@ char **cmd(char *str)
 		all_cmd[stock_index] = tmp; // mila soloina
 		stock_index++;
 	}
+	all_cmd[stock_index] = NULL;
 	i = 0;
-	while (all_cmd[i] && *all_cmd[i])
+	while (i  < count_cmd(str) && all_cmd[i])
 	{
-		cleared[i] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]));
-		printf("\n%d = %s\n", i, all_cmd[i]);
+		if (!ft_strchr(all_cmd[i], '$'))
+			cleared[i] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]) + 1);
+		else
+		{
+			cleared[i] = malloc(sizeof(char) * calcul_env_size(all_cmd[i]) + 1);
+			if (!cleared)
+				return(NULL);
+			cleared[i][0] = '\0';
+		}
+			printf("\n%d = %s\n", i, all_cmd[i]);
 		quote_clearer(all_cmd[i], cleared[i]); // aza adino no manova fonction an'ilay maka liste
 		i++;
 		// printf(" %d ", quote_handler(all_cmd[0]));
 	}
+	cleared[i] = NULL;
 	return(cleared);
 }
 int main()
@@ -282,17 +300,19 @@ int main()
 	t_cmd *lst;
 	char **stock;
 	// char *test = "LESS";char *str = "echo \"   \"  ' '";
-	char *str = "test \"hello;world\" '&&' foo|bar";
+	char *str = "kaiza$USER'bogany'";
 	// lst->cmd = NULL;
-	// lst = NULL;
-	printf("\n%d\n", count_cmd(str));
+	lst = NULL;
+	printf("\n[%d]\n", count_cmd(str));
 	// char *tmp;
 	// tmp = converter(str);
 	// printf("\n%s\n", tmp);
 
 	// tmp = NULL;
 	stock = cmd(str);
-	cmd_to_lst(stock , lst);
+	cmd_to_lst(stock , &lst);
+	printf("\n\n");
+	print_lst(lst);
 }
 // eto||||()() grep kaiza
 // "ls -l ''<''| grep kaiza"
@@ -302,3 +322,5 @@ int main()
 // kaiza \"<\"lesy
 // char *str = "echo \"hello;world\" '&&' foo|bar";
 // char *str = "echo \"a 'b' c\"' d \"e\" f' g\"h 'i' j\"k";
+// "test \"hello;world\" '&&'foo|bar"
+// 	char *str = "$USER$ZSH"; ETO NDRAY ALOHA

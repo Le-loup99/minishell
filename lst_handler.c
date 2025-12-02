@@ -13,7 +13,7 @@ t_cmd *nwlst(char *cmd)
 
 t_cmd *lst_last(t_cmd *lst)
 {
-	while(lst->next)
+	while(lst && lst->next)
 	{
 		lst = lst->next;
 	}
@@ -23,33 +23,44 @@ t_cmd *lst_last(t_cmd *lst)
 void lst_add_back(t_cmd *lst, t_cmd *new)
 {
 	lst = lst_last(lst);
+	if (!new)
+		return ;
 	lst->next = new;
 	new->next = NULL;
 }
 
 void print_lst(t_cmd *lst)
 {
-	while (lst)
+	while (lst && lst->cmd)
 	{
 		printf("%s\n", lst->cmd);
-		lst = lst->next;
+		if (lst->next)
+			lst = lst->next;
+		else
+			break;
 	}
 }
 
-t_cmd *cmd_to_lst(char **cmd, t_cmd *lst)
+t_cmd **cmd_to_lst(char **cmd, t_cmd **lst)
 {
-	int	i;
+	int		i;
+	t_cmd	*tmp;
 
 	i = 0;
-	while (cmd && *cmd && **cmd)
+	tmp = NULL;
+	while (cmd && cmd[i])
 	{
 		if (i == 0)
 		{
-			lst = nwlst(cmd[i]);
+			(*lst) = nwlst(cmd[i]);
 		}
 		else
 		{
-			lst_add_back(lst, nwlst(cmd[i]));
+			tmp = nwlst(cmd[i]);
+		}
+		if (tmp)
+		{
+			lst_add_back((*lst), tmp);
 		}
 		i++;
 	}

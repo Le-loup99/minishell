@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 12:16:29 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/11/25 15:22:28 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/02 17:18:04 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,8 @@ void	ft_strcat(char *dst, char *src)
 
 	i = 0;
 	j = 0;
+	if (!src)
+		return ;
 	while (dst[i])
 		i++;
 	while (src[j])
@@ -133,7 +135,7 @@ char	*quote_clearer(char *str, char *cleared)
 	quote = 0;
 	if (!quote_checker(str))
 	{
-		while (str[i])
+		while (str && str[i])
 		{
 			if(str[i] == '\'' && quote == 0)
 			{
@@ -157,9 +159,12 @@ char	*quote_clearer(char *str, char *cleared)
 			}
 			if (str[i] == '$' && quote != 1)
 			{
+				cleared[j] = '\0';
 				tmp = converter(str, &i);
-				// i++;
-				ft_strcat(cleared, tmp); // verifieo sao dia mi segfault
+				if (tmp)
+					ft_strcat(cleared, tmp); // verifieo sao dia mi segfault
+				else
+					cleared[j] = '\0';
 				while (cleared[j])
 					j++;
 			}
@@ -167,9 +172,11 @@ char	*quote_clearer(char *str, char *cleared)
 			{
 				cleared[j] = str[i];
 				j++;
-				i++;
+				if (str[i])
+					i++;
 			}
 		}
+		cleared[j] = '\0';
 	}
 	else
 	{
@@ -179,6 +186,7 @@ char	*quote_clearer(char *str, char *cleared)
 			j++;
 			i++;
 		}
+		cleared[j] = '\0';
 	}
 	printf("\n%s\n", cleared);
 	return (cleared);
