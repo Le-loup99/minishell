@@ -12,27 +12,7 @@
 
 #include "minishell.h"
 
-// t_cmd	*ft_lstlast(t_cmd *lst)
-// {
-// 	while (lst && lst->next)
-// 	{
-// 		lst = lst->next;
-// 	}
-// 	return (lst);
-// }
-
-// void	ft_lstadd_back(t_cmd **lst, t_cmd *new)
-// {
-// 	t_cmd	*old_last;
-
-// 	if (!new)
-// 		return ;
-// 	old_last = ft_lstlast(*lst);
-// 	old_last->next = new;
-// 	new->next = NULL;
-// }
-
-char	ft_strchr(const char *s, int c)
+int	ft_strchr(const char *s, int c)
 {
 	int		i;
 	char	*stock;
@@ -102,6 +82,55 @@ int	quote_checker(char *str)
 	return (0);
 }
 
+char	*ft_str_p_char(char *s1, char a)
+{
+	char	*final;
+	int		i;
+
+	i = 0;
+	final = malloc (ft_strlen(s1) + 2);
+	while (s1 && s1[i])
+	{
+		final[i] = s1[i];
+		i++;
+	}
+	final[i] = a;
+	i++;
+	final[i] = '\0';
+	if (s1)
+		free(s1);
+	return (final);
+}
+
+char	*ft_strjoin(char *dst, char *src)
+{
+	int		dstsize;
+	int		srcsize;
+	char	*tmp;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	dstsize = ft_strlen(dst);
+	srcsize = ft_strlen(src);
+	tmp = malloc (dstsize + srcsize + 1);
+	while (dst && dst[i])
+	{
+		tmp[i] = dst[i];
+		i++;
+	}
+	while (src && src[j])
+	{
+		tmp[i + j] = src[j];
+		j++;
+	}
+	tmp[i + j] = '\0';
+	if (dst)
+		free(dst);
+	return (tmp);
+}
+
 void	ft_strcat(char *dst, char *src)
 {
 	int	i;
@@ -162,22 +191,22 @@ char	*quote_clearer(char *str, char *cleared)
 				cleared[j] = '\0';
 				tmp = converter(str, &i);
 				if (tmp)
-					ft_strcat(cleared, tmp); // verifieo sao dia mi segfault
-				else
-					cleared[j] = '\0';
+					cleared = ft_strjoin(cleared, tmp); // verifieo sao dia mi segfault
 				while (cleared[j])
 					j++;
 			}
 			if ((str[i] == '\'' && quote == 2) || (str[i] == '"' && quote == 1) || (str[i] != '\'' && str[i] != '"'))
 			{
-				cleared[j] = str[i];
+				cleared = ft_str_p_char(cleared, str[i]);
 				j++;
 				if (str[i])
 					i++;
 			}
 		}
-		cleared[j] = '\0';
+		if (cleared[j - 1])
+			cleared[j] = '\0';
 	}
+	// else if(quote_checker(str) == 2)
 	else
 	{
 		while (str[i])

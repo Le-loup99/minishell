@@ -30,11 +30,12 @@ void	to_convert(char *str, char *stock, int len)
 {
 	int	i;
 	i = 0;
-	while(i < len)
+	while(i < len && str[i] != '$')
 	{
 		stock[i] = str[i];
 		i++;
 	}
+	stock[i] = '\0';
 }
 
 char *converter(char *str, int *i)
@@ -42,18 +43,27 @@ char *converter(char *str, int *i)
 	int		len;
 	char	*converted;
 	char	*stock;
+	char	*stock_env;
 
 	len = 0;
-	while(str[len + (*i) + 1] && str[len + (*i) + 1] != '\'' && str[len + (*i) + 1] != '"' && str[len + 	(*i) + 1] != ' ')
+	converted = NULL;
+	while (ft_strchr(str + (*i) + len, '$'))
+	{
 		len++;
-	stock = malloc(len + 1);
-	to_convert(str + (*i) + 1, stock, len);
-	converted = getenv(stock);
+		while(str[len + (*i) + 1] && str[len + (*i) + 1] != '\'' 
+			&& str[len + (*i) + 1] != '"' && str[len + (*i) + 1] != ' ' && str[len + (*i)] != '$')
+			len++;
+		stock = malloc(len + 1);
+		to_convert(str + (*i) + 1, stock, len);
+		stock_env = getenv(stock);
+		converted = ft_strjoin(converted, stock_env);
+	}
 	while(str[*i] && str[*i] != ' ' && str[*i] != '\'' && str[*i] != '"')
 		(*i)++;
 	printf("\n%s\n", converted);
 	return (converted);
 }
+
 int	calcul_env_size(char *str)
 {
 	int		i;
@@ -67,7 +77,8 @@ int	calcul_env_size(char *str)
 	while(str[i] != '$')
 		i++;
 	i++;
-	while(str[len + (i)] && str[len + (i)] != '\'' && str[len + i] != '"' && str[len + i + 1] != ' ')
+	while(str[len + (i)] && str[len + (i)] != '\'' && str[len + i] != '"' 
+		&& str[len + i + 1] != ' ')
 		len++;
 	while(str[len + j])
 		j++;

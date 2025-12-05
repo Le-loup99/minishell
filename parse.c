@@ -288,7 +288,7 @@ char **cmd(char *str)
 			cleared[i][0] = '\0';
 		}
 			printf("\n%d = %s\n", i, all_cmd[i]);
-		quote_clearer(all_cmd[i], cleared[i]); // aza adino no manova fonction an'ilay maka liste
+		cleared[i] = quote_clearer(all_cmd[i], cleared[i]); // aza adino no manova fonction an'ilay maka liste
 		i++;
 		// printf(" %d ", quote_handler(all_cmd[0]));
 	}
@@ -300,7 +300,7 @@ int main()
 	t_cmd *lst;
 	char **stock;
 	// char *test = "LESS";char *str = "echo \"   \"  ' '";
-	char *str = "kaiza$USER'bogany'";
+	char *str = "'\"$USER\"'";
 	// lst->cmd = NULL;
 	lst = NULL;
 	printf("\n[%d]\n", count_cmd(str));

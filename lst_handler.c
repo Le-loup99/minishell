@@ -33,7 +33,8 @@ void print_lst(t_cmd *lst)
 {
 	while (lst && lst->cmd)
 	{
-		printf("%s\n", lst->cmd);
+		if (lst->cmd)
+			printf("%s\n", lst->cmd);
 		if (lst->next)
 			lst = lst->next;
 		else
