@@ -23,5 +23,6 @@ int		calcul_env_size(char *str);
 void	ft_strcat(char *dst, char *src);
 char	*ft_strjoin(char *dst, char *src);
 char	*ft_str_p_char(char *s1, char a);
+void	free_pp(char **str);
 
 # endif

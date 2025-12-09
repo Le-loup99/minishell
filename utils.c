@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 12:16:29 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/02 17:18:04 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/09 15:21:11 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ int	quote_checker(char *str)
 	i = 0;
 	if (str[i] == '\'')
 	{
-		if (ft_strchr(str, '$'))
-			return (1);
+		// if (ft_strchr(str, '$'))
+		// 	return (1);
 		if (ft_strchr(str, '*'))
 			return (1);
 		if (ft_strchr(str, '?'))
@@ -162,6 +162,8 @@ char	*quote_clearer(char *str, char *cleared)
 	j = 0;
 	i = 0;
 	quote = 0;
+	if (!str)
+		return (NULL);
 	if (!quote_checker(str))
 	{
 		while (str && str[i])
@@ -194,6 +196,8 @@ char	*quote_clearer(char *str, char *cleared)
 					cleared = ft_strjoin(cleared, tmp); // verifieo sao dia mi segfault
 				while (cleared[j])
 					j++;
+				if (tmp)
+					free(tmp);
 			}
 			if ((str[i] == '\'' && quote == 2) || (str[i] == '"' && quote == 1) || (str[i] != '\'' && str[i] != '"'))
 			{

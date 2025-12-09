@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 10:54:52 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/02 17:14:55 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/09 16:22:08 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,8 @@ char *get_cmd(char *str, char *tmp, int *i)
 		{
 			if ((str[(*i) + 1] == ' ' || !str[(*i) + 1]) && str[(*i) - 1] == ' ' && quote == 0)
 			{
-				printf("%s", tmp);
 				tmp[j + 1] = '\0';
+				printf("%s", tmp);
 				return (tmp);
 			}
 			if ((quote == 1 && str[*i] == '\'') || (quote == 2 && str[*i] == '"'))
@@ -220,8 +220,8 @@ char *get_cmd(char *str, char *tmp, int *i)
 				j++;
 				if (str[*i])
 					(*i)++;
-				printf("%s", tmp);
 				tmp[j] = '\0';
+				printf("%s", tmp);
 				return (tmp);
 			}
 			quote = 0;
@@ -288,19 +288,24 @@ char **cmd(char *str)
 			cleared[i][0] = '\0';
 		}
 			printf("\n%d = %s\n", i, all_cmd[i]);
+		cleared[i][0] = '\0';
 		cleared[i] = quote_clearer(all_cmd[i], cleared[i]); // aza adino no manova fonction an'ilay maka liste
 		i++;
 		// printf(" %d ", quote_handler(all_cmd[0]));
 	}
+	free_pp(all_cmd);
+	if (all_cmd)
+		free(all_cmd);
 	cleared[i] = NULL;
 	return(cleared);
 }
+
 int main()
 {
 	t_cmd *lst;
 	char **stock;
 	// char *test = "LESS";char *str = "echo \"   \"  ' '";
-	char *str = "'\"$USER\"'";
+	char *str = "$$USER";
 	// lst->cmd = NULL;
 	lst = NULL;
 	printf("\n[%d]\n", count_cmd(str));
@@ -313,6 +318,9 @@ int main()
 	cmd_to_lst(stock , &lst);
 	printf("\n\n");
 	print_lst(lst);
+	free_pp(stock); // ito alana
+	free(stock);
+	free(lst);
 }
 // eto||||()() grep kaiza
 // "ls -l ''<''| grep kaiza"
