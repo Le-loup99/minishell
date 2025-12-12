@@ -304,14 +304,9 @@ int main()
 {
 	t_cmd *lst;
 	char **stock;
-	// char *test = "LESS";char *str = "echo \"   \"  ' '";
-	char *str = "$$USER";
-	// lst->cmd = NULL;
+	char *str = "echo \"a 'b' c\"' d \"e\" f' g\"h 'i' j\"k";
 	lst = NULL;
 	printf("\n[%d]\n", count_cmd(str));
-	// char *tmp;
-	// tmp = converter(str);
-	// printf("\n%s\n", tmp);
 
 	// tmp = NULL;
 	stock = cmd(str);

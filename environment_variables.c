@@ -79,6 +79,16 @@ char *converter(char *str, int *i)
 		{
 			stock_env = getenv("SYSTEMD_EXEC_PID");
 			len++;
+			converted = ft_strjoin(converted, stock_env);
+			if (*(str + (*i) + len) != '$')
+			{
+				while (*(str + (*i) + len) != '$' && *(str + (*i) + len) != '\'' 
+					&& *(str + (*i) + len) != '"' && *(str + (*i) + len) != '\0')
+				{
+					converted = ft_str_p_char(converted, *(str + (*i) + len));
+				 	len++;
+				}
+			}
 		}
 		else
 		{
@@ -93,6 +103,7 @@ char *converter(char *str, int *i)
 			stock_env = getenv(stock);
 			if (stock)
 			free(stock);
+			converted = ft_strjoin(converted, stock_env);
 		}
 		j++;
 		while ((str[(*i) + j] != '$' || ((str[(*i) + j - 1] == '$') && check < 1)) && ft_strchr(str + (*i) + j, '$'))
@@ -102,7 +113,6 @@ char *converter(char *str, int *i)
 			j++;
 		}
 		check = 0;
-		converted = ft_strjoin(converted, stock_env);
 	}
 	// while(*(str + (*i) + len))
 	// {
