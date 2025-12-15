@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 10:54:52 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/09 16:22:08 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/15 11:49:38 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,8 +304,10 @@ int main()
 {
 	t_cmd *lst;
 	char **stock;
-	char *str = "echo \"a 'b' c\"' d \"e\" f' g\"h 'i' j\"k";
+	char *str = "test <<< echo";
 	lst = NULL;
+	if (check_error_at_end(str) < 0 || check_quote_error(str) < 0 || check_operator_error(str) < 0)
+		return (0);
 	printf("\n[%d]\n", count_cmd(str));
 
 	// tmp = NULL;

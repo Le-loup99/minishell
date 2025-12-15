@@ -1,0 +1,13 @@
+a
+a.out
+b
+c
+check_error.c
+environment_variables.c
+Fanamby
+free.c
+lst_handler.c
+minishell.h
+parse.c
+test
+utils.c
