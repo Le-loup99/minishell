@@ -9,18 +9,29 @@ int		quote_checker(char *str);
 char	*quote_clearer(char *str, char *cleared);
 char	*converter(char *str, int *i);
 
+typedef enum r_type
+{
+	IN,
+	OUT,
+	APPEND,
+	HEREDOC,
+	PIPE,
+}	t_r_type;
+
 typedef struct s_redir
 {
-	int					type;
-	char				*target;
-	struct s_redir	*redir_next;
+	t_r_type			type;
+	char				*file_name;
+	int					fd;
+	struct s_redir		*redir_next;
 }		t_redir;
 
 typedef struct	s_cmd
 {
  	char			**cmd;
-	t_redir			in;
-	t_redir			out;
+	// t_redir			*in;
+	// t_redir			*out;
+	t_redir			*redir;
 	int				is_builtin;
  	struct s_cmd	*next;
 }		t_cmd;
@@ -38,4 +49,6 @@ int		check_error_at_end(char *str);
 int		check_quote_error(char *str);
 int		ft_strcmp(const char *s1, const char *s2);
 int		check_operator_error(char *str);
+int		check_after_redir(char **str);
+
 # endif

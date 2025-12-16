@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 09:31:04 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/15 11:52:59 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/16 15:42:43 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	check_error_at_end(char *str)
 	{
 		if (str[i] == '|')
 			printf("syntax error near unexpected token `|'\n");
-		else if(str[i] == '>' || '<')
+		else if(str[i] == '>' || str[i] == '<')
 			printf("syntax error near unexpected token `newline'\n");
 		return (-1);
 	}
@@ -153,16 +153,16 @@ int	check_operator_error(char *str)
 			}
 			i++;
 			space = check_space(str, &i);
-			if (space != 0 && (str[i] == '|' || str[i] == '<' || str[i] == '>'))
+			if (/*space != 0 && */(str[i] == '|' || str[i] == '<' || str[i] == '>'))
 			{
 				printf("syntax error\n");
 				return (-1);
 			}
-			else if(space == 0 && str[i] == '<')
-			{
-				printf("syntax error\n");
-				return (-1);
-			}
+			// else if(space == 0 && str[i] == '<' && str[i])
+			// {
+			// 	printf("syntax error\n");
+			// 	return (-1);
+			// }
 		}
 		else if (str[i] == '<')
 		{
@@ -178,7 +178,7 @@ int	check_operator_error(char *str)
 				printf("syntax error\n");
 				return (-1);
 			}
-			else if (space == 0 && (str[i] == '|'))
+			else if (space == 0 && (str[i] == '|' || str[i] == '>'))
 			{
 				printf("syntax error\n");
 				return (-1);
@@ -193,13 +193,46 @@ int	check_operator_error(char *str)
 			}
 			i++;
 			space = check_space(str, &i);
-			if (space != 0 && (str[i] == '|' || str[i] == '<' || str[i] == '>'))
+			if (/*space != 0 && */(str[i] == '|' || str[i] == '<' || str[i] == '>'))
 			{
 				printf("syntax error\n");
 				return (-1);
 			}
 		}
 		space = 0;
+		i++;
+	}
+	return (0);
+}
+
+int	check_after_redir(char **str)
+{
+	int	i;
+	int	check;
+
+	i = 0;
+	check = 0;
+	if (!str)
+		return(0);
+	if (!ft_strcmp(str[i], "<<") || !ft_strcmp(str[i], "<")
+		|| !ft_strcmp(str[i], ">>") || !ft_strcmp(str[i], ">"))
+	{
+		i++;
+		check = 1;
+	}
+	while (str && str[i] && ft_strcmp(str[i], "<<") && ft_strcmp(str[i], "<")
+			&& ft_strcmp(str[i], ">>") && ft_strcmp(str[i], ">"))
+	{
+		i++;
+	}
+	while (str && str[i])
+	{
+		if (check == 1 && ft_strcmp(str[i], "<<") && ft_strcmp(str[i], "<")
+			&& ft_strcmp(str[i], ">>") && ft_strcmp(str[i], ">"))
+		{
+			printf("syntax error");
+			return (-1);
+		}
 		i++;
 	}
 	return (0);

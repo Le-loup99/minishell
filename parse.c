@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 10:54:52 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/15 11:49:38 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/16 15:41:41 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,9 +266,11 @@ char **cmd(char *str)
 	tmp = NULL;
 	while (str[i])
 	{
-		tmp = malloc(sizeof(char ) * ft_strlen(str) + 1 + 1);
 		while (str[i] == ' ')
 			i++;
+		if (!str[i])
+			break;
+		tmp = malloc(sizeof(char ) * ft_strlen(str) + 1 + 1);
 		get_cmd(str, tmp, &i);
 		printf("%s\n", tmp);
 		all_cmd[stock_index] = tmp; // mila soloina
@@ -304,7 +306,7 @@ int main()
 {
 	t_cmd *lst;
 	char **stock;
-	char *str = "test <<< echo";
+	char *str = "ls > b > c ls";
 	lst = NULL;
 	if (check_error_at_end(str) < 0 || check_quote_error(str) < 0 || check_operator_error(str) < 0)
 		return (0);
@@ -312,12 +314,14 @@ int main()
 
 	// tmp = NULL;
 	stock = cmd(str);
+	if (check_after_redir(stock) < 0)
+		return (0);
 	cmd_to_lst(stock , &lst);
 	printf("\n\n");
 	print_lst(lst);
 	free_pp(stock); // ito alana
 	free(stock);
-	free(lst);
+	// free(lst);
 }
 // eto||||()() grep kaiza
 // "ls -l ''<''| grep kaiza"
