@@ -302,11 +302,12 @@ char **cmd(char *str)
 	return(cleared);
 }
 
-int main()
+// int main()
+t_cmd *parse(char *str)
 {
 	t_cmd *lst;
 	char **stock;
-	char *str = "ls > b > c ls";
+	// char *str = "ls > b > c";
 	lst = NULL;
 	if (check_error_at_end(str) < 0 || check_quote_error(str) < 0 || check_operator_error(str) < 0)
 		return (0);
@@ -319,9 +320,20 @@ int main()
 	cmd_to_lst(stock , &lst);
 	printf("\n\n");
 	print_lst(lst);
-	free_pp(stock); // ito alana
-	free(stock);
+	return (lst);
+	// free_pp(stock); // ito alana
+	// free(stock);
 	// free(lst);
+}
+
+int main ()
+{
+	t_cmd *lst;
+
+	lst = parse("ls > b > c ");
+	printf("\n\nmain\n\n");
+	print_lst(lst);
+	return (0);
 }
 // eto||||()() grep kaiza
 // "ls -l ''<''| grep kaiza"

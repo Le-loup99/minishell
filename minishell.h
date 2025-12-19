@@ -50,5 +50,6 @@ int		check_quote_error(char *str);
 int		ft_strcmp(const char *s1, const char *s2);
 int		check_operator_error(char *str);
 int		check_after_redir(char **str);
+t_cmd	*parse(char *str);
 
 # endif

@@ -193,7 +193,11 @@ t_cmd **cmd_to_lst(char **cmd, t_cmd **lst)
 void print_lst(t_cmd *lst)
 {
 	int	i;
+	t_redir	*tmp;
 
+	tmp = NULL;
+	if (lst->redir)
+		tmp = (lst->redir);
 	i = 0;
 	while (lst && lst->cmd)
 	{
@@ -201,22 +205,21 @@ void print_lst(t_cmd *lst)
 		if (lst->cmd)
 		{
 			printf("%s\n", lst->cmd[0]);
-			// if (lst->cmd[1])
-			// 	printf("%s\n", lst->cmd[1]);
+			if (lst->cmd[1])
+				printf("%s\n", lst->cmd[1]);
 		}
-		// printf("redir : %p\n", lst->redir);
-		// while (lst && lst->redir)
-		// {
-		// 	if (lst->redir->type)
-		// 	{
-		// 		printf("type : %d", lst->redir->type);
-		// 		printf(" filename : %s\n", lst->redir->file_name);
-		// 	}
-		// 	if (lst->redir->redir_next)
-		// 		lst->redir = lst->redir->redir_next;
-		// 	else
-		// 		break;
-		// }
+		while (tmp)
+		{
+			if (tmp)
+			{
+				printf("type : %d", tmp->type);
+				printf(" filename : %s\n", tmp->file_name);
+			}
+			if (tmp->redir_next)
+				tmp = tmp->redir_next;
+			else
+				break;
+		}
 		if (lst->next)
 			lst = lst->next;
 		else
