@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 08:50:40 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/15 11:42:25 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/22 19:10:49 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ char *converter(char *str, int *i)
 				len++;
 			stock = malloc(len + 1);
 			to_convert((str + (*i) + 1 + j), stock, len);
-			printf("\n ito le sotck %s\n", stock);
+			// printf("\n ito le sotck %s\n", stock);
 			// if (stock[0] == '$')
 			// 	stock_env = getenv("SYSTEMD_EXEC_PID");
 			stock_env = getenv(stock);
@@ -122,7 +122,7 @@ char *converter(char *str, int *i)
 	while(str[*i] && str[*i] != ' ' && str[*i] != '\'' 
 		&& str[*i] != '"')
 		(*i)++;
-	printf("\n%s\n", converted);
+	// printf("\n%s\n", converted);
 	return (converted);
 }
 

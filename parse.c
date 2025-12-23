@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 10:54:52 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/16 15:41:41 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/23 11:13:18 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,15 @@ int count_cmd(char *str)
 	return (count + 1);
 }
 
-int ft_strlen(char *str)
-{
-	int	i;
+// int ft_strlen(char *str)
+// {
+// 	int	i;
 
-	i= 0;
-	while (str && str[i])
-		i++;
-	return (i);
-}
+// 	i= 0;
+// 	while (str && str[i])
+// 		i++;
+// 	return (i);
+// }
 
 int	 operator_alone_in_quote(char *str, int i)
 {
@@ -116,7 +116,6 @@ char *get_cmd(char *str, char *tmp, int *i)
 	j = 0;
 	if (operator_alone_in_quote(str, (*i)))
 	{
-		printf("niditra");
 		copy_operator_in_quote(str, tmp, i);
 		return (tmp);
 	}
@@ -155,7 +154,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 			if ((str[(*i) + 1] == ' ' || !str[(*i) + 1]) && str[(*i) - 1] == ' ' && quote == 0)
 			{
 				tmp[j + 1] = '\0';
-				printf("%s", tmp);
+				// printf("%s", tmp);
 				return (tmp);
 			}
 			if ((quote == 1 && str[*i] == '\'') || (quote == 2 && str[*i] == '"'))
@@ -206,7 +205,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 				j++;
 				if (str[*i])
 					(*i)++;
-				printf("%s", tmp);
+				// printf("%s", tmp);
 				tmp[j] = '\0';
 				return (tmp);
 			}
@@ -221,7 +220,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 				if (str[*i])
 					(*i)++;
 				tmp[j] = '\0';
-				printf("%s", tmp);
+				// printf("%s", tmp);
 				return (tmp);
 			}
 			quote = 0;
@@ -230,10 +229,10 @@ char *get_cmd(char *str, char *tmp, int *i)
 			|| str[*i] == '(' || str[*i] == ')')) && quote == 0)
 		{
 			tmp[j] = '\0';
-			printf("eto %s", tmp);
+			// printf("eto %s", tmp);
 			return (tmp);
 		}
-		if ((str[((*i) - 1)] == '\'' || str[(*i) - 1] == '"') || (str[*i] == '<' && str[*i] == '>'))
+		if (*i != 0 && ((str[((*i) - 1)] == '\'' || str[(*i) - 1] == '"') || (str[*i] == '<' && str[*i] == '>'))) //teto nisy napiko
 		{
 			if (operator_alone_in_quote(str, (*i) - 1))
 			{
@@ -247,7 +246,7 @@ char *get_cmd(char *str, char *tmp, int *i)
 			(*i)++;
 	}
 	tmp[j] = '\0';
-	printf("%s", tmp);
+	// printf("%s", tmp);
 	return (tmp);
 }
 
@@ -258,9 +257,13 @@ char **cmd(char *str)
 	int		i;
 	int		stock_index;
 	char	**cleared;
+	int		check_split_expand;
+	int		j;
 
 	stock_index = 0;
 	i = 0;
+	check_split_expand = 0;
+	j = 0;
 	all_cmd = malloc(sizeof(char *) * (count_cmd(str)));
 	cleared = malloc(sizeof(char *) * (count_cmd(str)));
 	tmp = NULL;
@@ -272,8 +275,8 @@ char **cmd(char *str)
 			break;
 		tmp = malloc(sizeof(char ) * ft_strlen(str) + 1 + 1);
 		get_cmd(str, tmp, &i);
-		printf("%s\n", tmp);
-		all_cmd[stock_index] = tmp; // mila soloina
+		// printf("%s\n", tmp);
+		all_cmd[stock_index] = tmp;
 		stock_index++;
 	}
 	all_cmd[stock_index] = NULL;
@@ -281,19 +284,35 @@ char **cmd(char *str)
 	while (i  < count_cmd(str) && all_cmd[i])
 	{
 		if (!ft_strchr(all_cmd[i], '$'))
-			cleared[i] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]) + 1);
+			cleared[j] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]) + 1);
 		else
 		{
-			cleared[i] = malloc(sizeof(char) * calcul_env_size(all_cmd[i]) + 1);
+			cleared[j] = malloc(sizeof(char) * calcul_env_size(all_cmd[i]) + 1);
 			if (!cleared)
 				return(NULL);
-			cleared[i][0] = '\0';
+			cleared[j][0] = '\0';
 		}
-			printf("\n%d = %s\n", i, all_cmd[i]);
-		cleared[i][0] = '\0';
-		cleared[i] = quote_clearer(all_cmd[i], cleared[i]); // aza adino no manova fonction an'ilay maka liste
+			// printf("\n%d = %s\n", i, all_cmd[i]);
+		cleared[j][0] = '\0';
+		tmp = ft_strdup(all_cmd[i]);
+		cleared[j] = quote_clearer(&(all_cmd[i]), cleared[j],&check_split_expand);
+		while (check_split_expand == 1)
+		{
+			j++;
+			if (!ft_strchr(all_cmd[i], '$'))
+				cleared[j] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]) + 1);
+			else
+			{
+				cleared[j] = malloc(sizeof(char) * calcul_env_size(all_cmd[i]) + 1);
+				if (!cleared)
+					return(NULL);
+				cleared[j][0] = '\0';
+			}
+			cleared[j] = quote_clearer(&(all_cmd[i]), cleared[j], &check_split_expand);
+			i++;
+		}
+		j++;
 		i++;
-		// printf(" %d ", quote_handler(all_cmd[0]));
 	}
 	free_pp(all_cmd);
 	if (all_cmd)
@@ -302,46 +321,39 @@ char **cmd(char *str)
 	return(cleared);
 }
 
-// int main()
-t_cmd *parse(char *str)
+
+int main(int ac, char **av, char **env)
 {
+	(void) ac;
+	(void) av;
 	t_cmd *lst;
 	char **stock;
-	// char *str = "ls > b > c";
-	lst = NULL;
-	if (check_error_at_end(str) < 0 || check_quote_error(str) < 0 || check_operator_error(str) < 0)
-		return (0);
-	printf("\n[%d]\n", count_cmd(str));
+	char *str;
+	// char **all_path;
+	char *path = NULL;
+	int fd[2];
+	int fd_temp;
+	pid_t pid = 0;
 
-	// tmp = NULL;
-	stock = cmd(str);
-	if (check_after_redir(stock) < 0)
-		return (0);
-	cmd_to_lst(stock , &lst);
-	printf("\n\n");
-	print_lst(lst);
-	return (lst);
-	// free_pp(stock); // ito alana
+	lst = NULL;
+	fd_temp = 0;
+	// all_path = take_path(env);
+	while ((str = readline("minishell> ")))
+	{
+		if (check_error_at_end(str) >= 0 && check_quote_error(str) >= 0 && check_operator_error(str) >= 0)
+		{
+			stock = cmd(str);
+			cmd_to_lst(stock , &lst);
+			int size = ft_cmd_size(lst);
+			ft_heredoc(lst);
+			ft_execution(lst, env, fd_temp, path, fd, pid, size);
+			free(str);
+			str = NULL;
+			lst = NULL;
+			// print_lst(lst);
+		}
+	}
+	// free_pp(stock);
 	// free(stock);
 	// free(lst);
 }
-
-int main ()
-{
-	t_cmd *lst;
-
-	lst = parse("ls > b > c ");
-	printf("\n\nmain\n\n");
-	print_lst(lst);
-	return (0);
-}
-// eto||||()() grep kaiza
-// "ls -l ''<''| grep kaiza"
-// ''
-// 'kaiza' \"\"\"lesy\" 
-// (), >, |, ||
-// kaiza \"<\"lesy
-// char *str = "echo \"hello;world\" '&&' foo|bar";
-// char *str = "echo \"a 'b' c\"' d \"e\" f' g\"h 'i' j\"k";
-// "test \"hello;world\" '&&'foo|bar"
-// 	char *str = "$USER$ZSH"; ETO NDRAY ALOHA

@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 12:36:00 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/16 15:20:56 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/22 18:15:32 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 // 	new->next = NULL;
 // 	return (new);
 // }
+
 t_redir	*new_redir(char *type, char *target)
 {
 	t_redir *new_redir;
@@ -67,9 +68,15 @@ t_redir	*implement_redir(char **argv, int *i)
 	while (argv[(*i)] && ft_strcmp(argv[(*i)], "|"))
 	{
 		if (!final)
-			final = new_redir(argv[(*i)], argv[++(*i)]);
+		{
+			final = new_redir(argv[(*i)], argv[(*i) + 1]);
+			(*i)++;
+		}
 		else
-			tmp = new_redir(argv[(*i)], argv[++(*i)]);
+		{
+			tmp = new_redir(argv[(*i)], argv[(*i) + 1]);
+			(*i)++;
+		}
 		if (tmp)
 			redir_add_back(final, tmp);
 		(*i)++;
@@ -107,8 +114,9 @@ t_cmd *nwlst(char **argv, int *i)
 
 	cmd_index = 0;
 	new = malloc (sizeof(t_cmd));
-	new->cmd = malloc (sizeof(char *) + 50);
+	new->cmd = malloc (sizeof(char *) * (count_arg(argv) + 1));
 	new->redir = NULL;
+	new->cmd[0] = NULL;
 	// new->in = NULL;
 	// new->out = NULL;
 	while (argv[(*i)])
@@ -192,20 +200,22 @@ t_cmd **cmd_to_lst(char **cmd, t_cmd **lst)
 
 void print_lst(t_cmd *lst)
 {
-	int	i;
+	// int	i;
 	t_redir	*tmp;
 
 	tmp = NULL;
+	if (!lst)
+		return ;
 	if (lst->redir)
 		tmp = (lst->redir);
-	i = 0;
+	// i = 0;
 	while (lst && lst->cmd)
 	{
 		printf("\nnext cmd :\n");
 		if (lst->cmd)
 		{
 			printf("%s\n", lst->cmd[0]);
-			if (lst->cmd[1])
+			if (lst->cmd && lst->cmd[0] && lst->cmd[1])
 				printf("%s\n", lst->cmd[1]);
 		}
 		while (tmp)

@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 09:31:04 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/16 15:42:43 by arakoto2         ###   ########.fr       */
+/*   Updated: 2025/12/23 09:59:49 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	check_quote_error(char *str)
 	return (0);
 }
 
-int	check_space(char *str, int *i)
+static int	check_space(char *str, int *i)
 {
 	int	space;
 
@@ -145,27 +145,6 @@ int	check_operator_error(char *str)
 			return (0);
 		if (str[i] == '>')
 		{
-			// check += 1;
-			if (check_operator_nbr(str, i) > 2)
-			{
-				printf("syntax error\n");
-				return (-1);
-			}
-			i++;
-			space = check_space(str, &i);
-			if (/*space != 0 && */(str[i] == '|' || str[i] == '<' || str[i] == '>'))
-			{
-				printf("syntax error\n");
-				return (-1);
-			}
-			// else if(space == 0 && str[i] == '<' && str[i])
-			// {
-			// 	printf("syntax error\n");
-			// 	return (-1);
-			// }
-		}
-		else if (str[i] == '<')
-		{
 			if (check_operator_nbr(str, i) > 2)
 			{
 				printf("syntax error\n");
@@ -176,6 +155,26 @@ int	check_operator_error(char *str)
 			if (space != 0 && (str[i] == '|' || str[i] == '<' || str[i] == '>'))
 			{
 				printf("syntax error\n");
+				return (-1);
+			}
+			else if(space == 0 && (str[i] == '<' || str[i] == '|'))
+			{
+				printf("syntax error\n");
+				return (-1);
+			}
+		}
+		else if (str[i] == '<')
+		{
+			if (check_operator_nbr(str, i) > 2)
+			{
+				printf("syntax error \n");
+				return (-1);
+			}
+			i++;
+			space = check_space(str, &i);
+			if (space != 0 && (str[i] == '|' || str[i] == '<' || str[i] == '>'))
+			{
+				printf("syntax error \n");
 				return (-1);
 			}
 			else if (space == 0 && (str[i] == '|' || str[i] == '>'))
@@ -193,11 +192,16 @@ int	check_operator_error(char *str)
 			}
 			i++;
 			space = check_space(str, &i);
-			if (/*space != 0 && */(str[i] == '|' || str[i] == '<' || str[i] == '>'))
+			if (str[i] == '|')
 			{
 				printf("syntax error\n");
 				return (-1);
 			}
+			// if (space != 0 && (str[i] == '|' || str[i] == '<' || str[i] == '>'))
+			// {
+			// 	printf("syntax error kiii2\n");
+			// 	return (-1);
+			// }
 		}
 		space = 0;
 		i++;
@@ -205,35 +209,35 @@ int	check_operator_error(char *str)
 	return (0);
 }
 
-int	check_after_redir(char **str)
-{
-	int	i;
-	int	check;
+// int	check_after_redir(char **str)
+// {
+// 	int	i;
+// 	int	check;
 
-	i = 0;
-	check = 0;
-	if (!str)
-		return(0);
-	if (!ft_strcmp(str[i], "<<") || !ft_strcmp(str[i], "<")
-		|| !ft_strcmp(str[i], ">>") || !ft_strcmp(str[i], ">"))
-	{
-		i++;
-		check = 1;
-	}
-	while (str && str[i] && ft_strcmp(str[i], "<<") && ft_strcmp(str[i], "<")
-			&& ft_strcmp(str[i], ">>") && ft_strcmp(str[i], ">"))
-	{
-		i++;
-	}
-	while (str && str[i])
-	{
-		if (check == 1 && ft_strcmp(str[i], "<<") && ft_strcmp(str[i], "<")
-			&& ft_strcmp(str[i], ">>") && ft_strcmp(str[i], ">"))
-		{
-			printf("syntax error");
-			return (-1);
-		}
-		i++;
-	}
-	return (0);
-}
+// 	i = 0;
+// 	check = 0;
+// 	if (!str)
+// 		return(0);
+// 	if (!ft_strcmp(str[i], "<<") || !ft_strcmp(str[i], "<")
+// 		|| !ft_strcmp(str[i], ">>") || !ft_strcmp(str[i], ">"))
+// 	{
+// 		i++;
+// 		check = 1;
+// 	}
+// 	while (str && str[i] && ft_strcmp(str[i], "<<") && ft_strcmp(str[i], "<")
+// 			&& ft_strcmp(str[i], ">>") && ft_strcmp(str[i], ">"))
+// 	{
+// 		i++;
+// 	}
+// 	while (str && str[i])
+// 	{
+// 		if (check == 1 && ft_strcmp(str[i], "<<") && ft_strcmp(str[i], "<")
+// 			&& ft_strcmp(str[i], ">>") && ft_strcmp(str[i], ">"))
+// 		{
+// 			printf("syntax error");
+// 			return (-1);
+// 		}
+// 		i++;
+// 	}
+// 	return (0);
+// }
