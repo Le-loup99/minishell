@@ -1,23 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dup_temp.c                                      :+:      :+:    :+:   */
+/*   ft_signal.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: framanan <framanan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/20 11:41:41 by framanan          #+#    #+#             */
-/*   Updated: 2026/01/02 20:43:47 by framanan         ###   ########.fr       */
+/*   Created: 2025/12/30 09:09:49 by framanan          #+#    #+#             */
+/*   Updated: 2026/01/06 10:44:39 by framanan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_dup_fd_temp(int *fd[2], int *fd_temp, int size)
+void	signal_handler(int signum)
 {
-	if (*fd_temp != 0)
-		close(*fd_temp);
-	if (size > 1)
-		*fd_temp = dup(fd[0][0]);
-	close(fd[0][0]);
-	close(fd[0][1]);
+	(void)signum;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+void	handler_hd(int signum)
+{
+	// int fd;
+	g_signal = signum;
+	// fd = dup(0);
+	// close(0);
+	// dup2(0, fd);
+    write(1, "\n", 1);
+	close(0);
+	// rl_done = 1;
+    // rl_replace_line("", 0);
+	// rl_eof_found = 1;
 }

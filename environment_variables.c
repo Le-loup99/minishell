@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 08:50:40 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/22 19:10:49 by arakoto2         ###   ########.fr       */
+/*   Updated: 2026/01/09 21:30:56 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	to_convert(char *str, char *stock, int len)
 {
 	int	i;
 	i = 0;
-	while(i < len && str[i] && (str[i] != '$' || (i > 0 && str[i - 1] == '$')))
+	while(i < len && str[i] && (str[i] != '$' || (i > 0 && str[i - 1] == '$')) && str[i] != '"' && str[i] != '\'')
 	{
 		stock[i] = str[i];
 		i++;
@@ -38,27 +38,57 @@ void	to_convert(char *str, char *stock, int len)
 	stock[i] = '\0';
 }
 
-// char	*ft_get_env(char *stock_env, char *str, int i)
-// {
-// 	int	len;
-// 	char *stock;
+int	check_count_pipe(char *str)
+{
+	int	i;
+	int	count;
 
-// 	len = 0;
-// 	while(str[len + i + 1] && str[len + i + 1] != '\'' 
-// 				&& str[len + i + 1] != '"' && str[len + i + 1] != ' ' && (str[len + i] != '$' || str[len + i - 1] == '$'))
-// 				len++;
-// 	stock = malloc(len + 1);
-// 	to_convert(str + (*i) + 1 + j, stock, len);
-// 	printf("\n ito le sotck %s\n", stock);
-// 	// if (stock[0] == '$')
-// 	// 	stock_env = getenv("SYSTEMD_EXEC_PID");
-// 	stock_env = getenv(stock);
-// 	if (stock)
-// 		free(stock);
-// 	return (stock_env);
-// }
+	count = 0;
+	i = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+	{
+		if (str[i] == '|')
+			count++;
+		i++;
+	}
+	return (count);
+}
 
-char *converter(char *str, int *i)
+char *modify_str(char *str, int nbr)
+{
+	int	check;
+	int	i;
+	char *new_str;
+	int	j;
+
+	check = 0;
+	i = 0;
+	j = 0;
+	if (!str)
+		return (NULL);
+	new_str = malloc(ft_strlen(str) + nbr + 1);
+	while (str[i])
+	{
+		if (str[i] != '|')
+			check = 0;
+		new_str[j] = str[i];
+		if (str[i] == '|' && check == 0)
+		{
+			j++;
+			new_str[j] = '|';
+			// j++;
+			check++;
+		}
+		i++;
+		j++;
+	}
+	new_str[j] = '\0';
+	return (new_str);
+}
+
+char *converter(char *str, int *i, t_list *env)
 {
 	int		len;
 	char	*converted;
@@ -66,28 +96,32 @@ char *converter(char *str, int *i)
 	char	*stock_env;
 	int		j;
 	int		check;
+	int		count;
 
 	j = 0;
 	len = 0;
 	check = 0;
 	converted = NULL;
 	stock_env = NULL;
+	count = 0;
 	while (ft_strchr(str + (*i) + len, '$'))
 	{
 		len++;
-		if (*(str + (*i) + len) == '$')
+		if (!ft_isalnum(*(str + (*i) + len)) && *(str + (*i) + len) != '_' && *(str + (*i) + len) != '?')
 		{
-			stock_env = getenv("SYSTEMD_EXEC_PID");
-			len++;
-			converted = ft_strjoin(converted, stock_env);
-			if (*(str + (*i) + len) != '$')
+			if (*(str + (*i) + len) != '"' && *(str + (*i) + len) != '\'')
+				converted = ft_str_p_char(converted, *(str + (*i) + len - 1));
+			while (*(str + (*i) + len) == '$' && (!(check % 2) || (*(str + (*i) + len + 1) && *(str + (*i) + len + 1) == '$')))
 			{
-				while (*(str + (*i) + len) != '$' && *(str + (*i) + len) != '\'' 
-					&& *(str + (*i) + len) != '"' && *(str + (*i) + len) != '\0')
-				{
-					converted = ft_str_p_char(converted, *(str + (*i) + len));
-				 	len++;
-				}
+				converted = ft_str_p_char(converted, '$');
+				len++;
+				check++;
+			}
+			while (*(str + (*i) + len) != '$' && *(str + (*i) + len) != '\'' 
+				&& *(str + (*i) + len) != '"' && *(str + (*i) + len) != '\0')
+			{
+				converted = ft_str_p_char(converted, *(str + (*i) + len));
+			 	len++;
 			}
 		}
 		else
@@ -97,15 +131,13 @@ char *converter(char *str, int *i)
 				len++;
 			stock = malloc(len + 1);
 			to_convert((str + (*i) + 1 + j), stock, len);
-			// printf("\n ito le sotck %s\n", stock);
-			// if (stock[0] == '$')
-			// 	stock_env = getenv("SYSTEMD_EXEC_PID");
-			stock_env = getenv(stock);
+			stock_env = ft_return_env_value(env, stock);
 			if (stock)
-			free(stock);
+				free(stock);
 			converted = ft_strjoin(converted, stock_env);
 		}
 		j++;
+		check = 0;
 		while ((str[(*i) + j] != '$' || ((str[(*i) + j - 1] == '$') && check < 1)) && ft_strchr(str + (*i) + j, '$'))
 		{
 			if (str[(*i) + j] == '$')
@@ -113,15 +145,24 @@ char *converter(char *str, int *i)
 			j++;
 		}
 		check = 0;
+		if (stock_env)
+		{
+			count++;
+			while ((str[(*i) + count] != '$' || ((str[(*i) + count - 1] == '$') && check < 1)) && ft_strchr(str + (*i) + j, '$'))
+			{
+				if (str[(*i) + count] == '$')
+					check = 1;
+				count++;
+			}
+		}
 	}
-	// while(*(str + (*i) + len))
-	// {
-	// 	ft_str_p_char(converted, *(str + (*i) + len));
-	// 	len++;
-	// }
+	*i = *i + count;
 	while(str[*i] && str[*i] != ' ' && str[*i] != '\'' 
 		&& str[*i] != '"')
 		(*i)++;
+	check = check_count_pipe(converted);
+	if (check)
+		converted = modify_str(converted, check);
 	// printf("\n%s\n", converted);
 	return (converted);
 }

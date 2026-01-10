@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 10:54:52 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/23 11:13:18 by arakoto2         ###   ########.fr       */
+/*   Updated: 2026/01/09 18:07:13 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,313 +14,64 @@
 #include <stdio.h>
 #include <string.h>
 
-int count_cmd(char *str)
+
+char  **lst_env_to_tab(t_list *curr_env)
 {
-	int	i;
-	int	count;
-	int quote;
+	int i = 0;
+	char *temp = NULL;
 
-	i = 0;
-	count = 1;
-	quote = 0;
-	while (str[i] == ' ')
-		i++;
-	if (!str[i])
-		count = 0;
-	while (str[i])
-	{
-		if (str[i] == '"' && quote == 0)
-		{
-			quote = 2;
-			i++;
-		}
-		else if (str[i] == '\'' && quote == 0)
-		{
-			quote = 1;
-			i++;
-		}
-		if (str[i] == '"' && quote == 2)
-			quote = 0;
-		else if (str[i] == '\'' && quote == 1)
-			quote = 0;
-		if (str[i] == ' ' && str[i + 1] != ' ' && str[i + 1] != 0
-			&& quote == 0)
-			count++;
-		if ((str[i] == '|' || str[i] == '<' || str[i] == '>' || str[i] == '(' || str[i] == ')') && quote == 0)
-			count+= 2;
-		i++;
-	}
-	return (count + 1);
-}
+	char **env = NULL;
 
-// int ft_strlen(char *str)
-// {
-// 	int	i;
-
-// 	i= 0;
-// 	while (str && str[i])
-// 		i++;
-// 	return (i);
-// }
-
-int	 operator_alone_in_quote(char *str, int i)
-{
-	if(str[i] == '\'' && (str[i + 1] == '<' || str[i + 1] == '>'))
+	env = malloc(sizeof(char *) * (size_en(curr_env) + 1));
+	while (curr_env)
 	{
-		if (str[i + 2] == '\'' && (str[i + 3] == ' ' || str[i + 3] == 0))
-			return (1);
-		else if((str[i + 2] == '<' || str[i + 2] == '>') && (str[i + 3] == '\'') && (str[i + 4] == ' ' || str[i + 4] == 0))
-			return (1);
-	}
-	else if(str[i] == '"' && (str[i + 1] == '<' || str[i + 1] == '>'))
-	{
-		if (str[i + 2] == '"' && (str[i + 3] == ' ' || str[i + 3] == 0))
-			return (1);
-		else if((str[i + 2] == '<' || str[i + 2] == '>') && (str[i + 3] == '"') && (str[i + 3] == ' ' || str[i + 3] == 0))
-			return (1);
-	}
-	return (0);
-}
-
-void copy_operator_in_quote(char *str, char *tmp, int *i)
-{
-	int	j;
-
-	j = 0;
-	tmp[j] = str[*i];
-	(*i)++;
-	j++;
-	while (j < 4)
-	{
-		if (str[*i] == tmp[0])
+		if (curr_env->value)
 		{
-			tmp[j] = str[*i];
-			(*i)++;
-			tmp[j + 1] = '\0';
-			return ;
+			temp = ft_strjoin(curr_env->name, "=");
+			if (!curr_env->value[0])
+				temp = ft_strjoin(temp, "\"\"");
 		}
-		tmp[j] = str[*i];
-		j++;
-		(*i)++;
-	}
-	tmp[j + 1] = '\0';
-	return ;
-}
-
-char *get_cmd(char *str, char *tmp, int *i)
-{
-	int	j;
-	int quote;
-
-	quote = 0;
-	j = 0;
-	if (operator_alone_in_quote(str, (*i)))
-	{
-		copy_operator_in_quote(str, tmp, i);
-		return (tmp);
-	}
-	if (str[*i] == '<' || str[*i] == '>')
-	{
-		while ((str[*i] == '<' || str[*i] == '>') && j < 2)
-		{
-			tmp[j] = str[*i];
-			(*i)++;
-			j++;
-		}
-		tmp[j] = '\0';
-	}
-	else if (str[*i] == '|' && j < 2)
-	{
-		while(str[*i] == '|' && j < 2)
-		{
-			tmp[j] = str[*i];
-			(*i)++;
-			j++;
-		}
-		tmp[j] = '\0';
-	}
-	else if ((str[*i] == '(' || str[*i] == ')') && j < 2)
-	{
-		tmp[j] = str[*i];
-		(*i)++;
-		j++;
-	}
-	if (j > 0)
-		return (tmp);
-	while(str[*i])
-	{
-		if ((str[*i] == '\'' || str[*i] == '"') && *i != 0)
-		{
-			if ((str[(*i) + 1] == ' ' || !str[(*i) + 1]) && str[(*i) - 1] == ' ' && quote == 0)
-			{
-				tmp[j + 1] = '\0';
-				// printf("%s", tmp);
-				return (tmp);
-			}
-			if ((quote == 1 && str[*i] == '\'') || (quote == 2 && str[*i] == '"'))
-			{
-				quote = 0;
-				tmp[j] = str[*i];
-				j++;
-				if (str[*i])
-					(*i)++;
-			}
-			else if (quote == 0 && str[(*i)] == '\'')
-			{
-				quote = 1;
-				tmp[j] = str[*i];
-				j++;
-				if (str[*i])
-					(*i)++;
-			}
-			else if (quote == 0 && str[*i] == '"')
-			{
-				quote = 2;
-				tmp[j] = str[*i];
-				j++;
-				if (str[*i])
-					(*i)++;
-			}
-			else
-			{
-				tmp[j] = str[*i];
-				j++;
-				if (str[*i])
-					(*i)++;
-			}
-		}
-		if (str[*i] == '"' && quote == 0)
-		{
-			quote = 2;
-		}
-		else if (str[*i] == '\'' && quote == 0)
-		{
-			quote = 1;
-		}
-		else if (str[*i] == '"' && quote == 2)
-		{
-			if (str[(*i) + 1] == ' ' || str[(*i) + 1] == 0)
-			{
-				tmp[j] = str[*i];
-				j++;
-				if (str[*i])
-					(*i)++;
-				// printf("%s", tmp);
-				tmp[j] = '\0';
-				return (tmp);
-			}
-			quote = 0;
-		}
-		else if (str[*i] == '\'' && quote == 1)
-		{
-			if (str[(*i) + 1] == ' ' || str[(*i) + 1] == 0)
-			{
-				tmp[j] = str[*i];
-				j++;
-				if (str[*i])
-					(*i)++;
-				tmp[j] = '\0';
-				// printf("%s", tmp);
-				return (tmp);
-			}
-			quote = 0;
-		}
-		if ((str[*i] == ' ' || (str[*i] == '<' || str[*i] == '>' || str[*i] == '|'
-			|| str[*i] == '(' || str[*i] == ')')) && quote == 0)
-		{
-			tmp[j] = '\0';
-			// printf("eto %s", tmp);
-			return (tmp);
-		}
-		if (*i != 0 && ((str[((*i) - 1)] == '\'' || str[(*i) - 1] == '"') || (str[*i] == '<' && str[*i] == '>'))) //teto nisy napiko
-		{
-			if (operator_alone_in_quote(str, (*i) - 1))
-			{
-				(*i)--;
-				get_cmd(str, tmp, i);
-			}
-		}
-		tmp[j] = str[*i];
-		j++;
-		if (str[*i])
-			(*i)++;
-	}
-	tmp[j] = '\0';
-	// printf("%s", tmp);
-	return (tmp);
-}
-
-char **cmd(char *str)
-{
-	char	*tmp;
-	char	**all_cmd;
-	int		i;
-	int		stock_index;
-	char	**cleared;
-	int		check_split_expand;
-	int		j;
-
-	stock_index = 0;
-	i = 0;
-	check_split_expand = 0;
-	j = 0;
-	all_cmd = malloc(sizeof(char *) * (count_cmd(str)));
-	cleared = malloc(sizeof(char *) * (count_cmd(str)));
-	tmp = NULL;
-	while (str[i])
-	{
-		while (str[i] == ' ')
-			i++;
-		if (!str[i])
-			break;
-		tmp = malloc(sizeof(char ) * ft_strlen(str) + 1 + 1);
-		get_cmd(str, tmp, &i);
-		// printf("%s\n", tmp);
-		all_cmd[stock_index] = tmp;
-		stock_index++;
-	}
-	all_cmd[stock_index] = NULL;
-	i = 0;
-	while (i  < count_cmd(str) && all_cmd[i])
-	{
-		if (!ft_strchr(all_cmd[i], '$'))
-			cleared[j] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]) + 1);
 		else
-		{
-			cleared[j] = malloc(sizeof(char) * calcul_env_size(all_cmd[i]) + 1);
-			if (!cleared)
-				return(NULL);
-			cleared[j][0] = '\0';
-		}
-			// printf("\n%d = %s\n", i, all_cmd[i]);
-		cleared[j][0] = '\0';
-		tmp = ft_strdup(all_cmd[i]);
-		cleared[j] = quote_clearer(&(all_cmd[i]), cleared[j],&check_split_expand);
-		while (check_split_expand == 1)
-		{
-			j++;
-			if (!ft_strchr(all_cmd[i], '$'))
-				cleared[j] = malloc(sizeof(char ) * ft_strlen(all_cmd[i]) + 1);
-			else
-			{
-				cleared[j] = malloc(sizeof(char) * calcul_env_size(all_cmd[i]) + 1);
-				if (!cleared)
-					return(NULL);
-				cleared[j][0] = '\0';
-			}
-			cleared[j] = quote_clearer(&(all_cmd[i]), cleared[j], &check_split_expand);
-			i++;
-		}
-		j++;
+			temp = curr_env->name;
+		temp = ft_strjoin(temp, curr_env->value);
+		env[i] = ft_strdup(temp);
 		i++;
+		curr_env = curr_env->next;
 	}
-	free_pp(all_cmd);
-	if (all_cmd)
-		free(all_cmd);
-	cleared[i] = NULL;
-	return(cleared);
+	env[i] = NULL;
+	return(env);
+	
 }
 
+int      size_en(t_list *env)
+{
+	int len;
+
+	len = 0;
+
+	while (env)
+	{
+		len++;
+		env = env->next;
+	}
+	return(len);
+	
+}
+void	delete_file(t_cmd *lst)
+{
+	while (lst)
+	{
+		while(/*g_signal == SIGINT && */ lst->redir_in)
+		{
+			if (lst->redir_in && lst->redir_in->type == HEREDOC)
+			{
+				unlink(lst->redir_in->file_name);
+			}
+			lst->redir_in = lst->redir_in->redir_next;
+		}
+		lst = lst->next;
+	}
+}
 
 int main(int ac, char **av, char **env)
 {
@@ -329,31 +80,54 @@ int main(int ac, char **av, char **env)
 	t_cmd *lst;
 	char **stock;
 	char *str;
-	// char **all_path;
 	char *path = NULL;
+	int		check_hd;
 	int fd[2];
+	t_list  *curr_env;
 	int fd_temp;
 	pid_t pid = 0;
-
+	curr_env = take_env(env);
 	lst = NULL;
+	check_hd = 0;
 	fd_temp = 0;
-	// all_path = take_path(env);
-	while ((str = readline("minishell> ")))
+	signal(SIGQUIT,  SIG_IGN);
+	signal(SIGINT,  signal_handler);
+	env_lst_add_back(&curr_env, lstnew("?", "0"));
+	while ((str = readline("minishell$ ")))
 	{
-		if (check_error_at_end(str) >= 0 && check_quote_error(str) >= 0 && check_operator_error(str) >= 0)
-		{
-			stock = cmd(str);
+			add_history(str);
+			env = lst_env_to_tab(curr_env);
+			stock = cmd(str, curr_env);
 			cmd_to_lst(stock , &lst);
 			int size = ft_cmd_size(lst);
-			ft_heredoc(lst);
-			ft_execution(lst, env, fd_temp, path, fd, pid, size);
+			check_hd = ft_heredoc(lst, curr_env, str);
+			if (check_hd != -1)
+			{
+				if (g_signal != SIGINT && check_error_at_end(str) >= 0 && check_quote_error(str) >= 0 && check_operator_error(str) >= 0)
+				{
+					if(size == 1 && lst->is_builtin)
+						ft_is_built_in(lst, &curr_env);
+					else
+						ft_execution(lst, env, fd_temp, path, fd, pid, size, curr_env);
+				}
+			}
+			delete_file(lst);
 			free(str);
 			str = NULL;
 			lst = NULL;
-			// print_lst(lst);
-		}
+			signal(SIGQUIT,  SIG_IGN);
+			signal(SIGINT,  signal_handler);
+			if (g_signal == SIGINT)
+			{
+				ft_search_replace(&curr_env, "?", ft_itoa(130));
+				int dev = open("/dev/tty", O_RDONLY);
+				dup2(dev, 0);
+				if(dev != 0)
+					close(dev);
+			}
+			g_signal = SIGUSR1;
 	}
-	// free_pp(stock);
-	// free(stock);
-	// free(lst);
+	ft_putstr_fd("exit\n", 1);
+	// return(ft_atoi(ft_return_env_value(curr_env, "?")));
+	return (0);
 }

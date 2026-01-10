@@ -6,7 +6,7 @@
 /*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 12:16:29 by arakoto2          #+#    #+#             */
-/*   Updated: 2025/12/23 11:19:23 by arakoto2         ###   ########.fr       */
+/*   Updated: 2026/01/09 21:09:20 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,10 @@ char	*ft_str_p_char(char *s1, char a)
 	int		i;
 
 	i = 0;
-	final = malloc (ft_strlen(s1) + 2);
+	if (!s1)
+		final = malloc (2);
+	else
+		final = malloc (ft_strlen(s1) + 2);
 	while (s1 && s1[i])
 	{
 		final[i] = s1[i];
@@ -183,6 +186,7 @@ void	ft_strcat(char *dst, char *src)
 	dst[i] = '\0';
 	return ;
 }
+
 int	check_space(char *str)
 {
 	int	i;
@@ -197,66 +201,161 @@ int	check_space(char *str)
 	return (0);
 }
 
-char	*tmp_cuter(char *tmp)
-{
-	char	*cuted;
-	int		i;
+// char	*tmp_cuter(char *tmp)
+// {
+// 	char	*cuted;
+// 	int		i;
+// 	int		j;
 
-	i = 0;
-	if (!tmp)
-		return (NULL);
-	cuted = malloc (ft_strlen(tmp) + 1);
-	while (tmp[i] && tmp[i] != ' ')
-	{
-		cuted[i] = tmp[i];
-		i++;
-	}
-	cuted[i] = '\0';
-	// free (tmp);
-	return (cuted);
-}
+// 	i = 0;
+// 	j = 0;
+// 	if (!tmp)
+// 		return (NULL);
+// 	cuted = malloc (ft_strlen(tmp) + 1);
+// 	while (tmp[i] && (tmp[i] == ' ' || tmp[i] == '\t'))
+// 		i++;
+// 	while (tmp[i] && tmp[i] != ' ')
+// 	{
+// 		cuted[j] = tmp[i];
+// 		i++;
+// 		j++;
+// 	}
+// 	cuted[j] = '\0';
+// 	// free (tmp);
+// 	return (cuted);
+// }
 
-char	*str_cuter(char	*str, char *tmp)
-{
-	int		i;
-	int		j;
-	char	*stock;
+// char	*str_cuter(char	*str, char *tmp, t_list *env)
+// {
+// 	int		i;
+// 	int		j;
+// 	char	*stock;
+// 	char	*to_add;
+// 	int		check_split_expand;
+// 	char	*new_str;
 
-	i = 0;
-	j = 0;
-	if (!tmp)
-		return (NULL);
-	stock = malloc (ft_strlen(tmp) + 1);
-	if (!stock)
-		return (NULL);
-	while (tmp[j] && tmp[j] != ' ')
-		j++;
-	j++;
-	while (tmp[j])
-	{
-		stock[i] = tmp[j];
-		i++;
-		j++;
-	}
-	stock[i] = '\0';
-	free(str);
-	return (stock);
-}
+// 	i = 0;
+// 	j = 0;
+// 	check_split_expand = 0;
+// 	to_add = NULL;
+// 	new_str = NULL;
+// 	if (!tmp)
+// 		return (NULL);
+// 	stock = malloc (ft_strlen(tmp) + 1);
+// 	if (!stock)
+// 		return (NULL);
+// 	if (tmp[0] && (tmp[0] == ' ' || tmp[0] == '\t'))
+// 	{
+// 		while (tmp[j] == ' ' || tmp[j] == '\t')
+// 			j++;
+// 	}
+// 	while (tmp[j] && tmp[j] != ' ' && tmp[j] != '\t')
+// 		j++;
+// 	while (tmp[j] && (tmp[j] == ' ' || tmp[j] == '\t'))
+// 		j++;
+// 	// ft_strlcpy(stock, tmp + j, 	INT_MAX);
+// 	while (tmp[j])
+// 	{
+// 		stock[i] = tmp[j];
+// 		i++;
+// 		if (tmp[j] == ' ' || tmp[j] == '\t')
+// 		{
+// 			while (tmp[j] == ' ' || tmp[j] == '\t')
+// 				j++;
+// 		}
+// 		else
+// 			j++;
+// 	}
+// 	stock[i] = '\0';
+// 	j = 0;
+// 	while(str[j] && str[j] != '"' && str[j] != '\'')
+// 		j++;
+// 	if (str[j] == '"' || str[j] == '\'')
+// 	{
+// 		if (!ft_strchr(str + j, '$'))
+// 		{
+// 			to_add = malloc(sizeof(char ) * ft_strlen(str) + 1);
+// 			if (!to_add)
+// 				return(NULL);
+// 			to_add[0] = '\0';
+// 		}
+// 		else
+// 		{
+// 			to_add = malloc(sizeof(char) * calcul_env_size(str) + 1);
+// 			if (!to_add)
+// 				return(NULL);
+// 			to_add[0] = '\0';
+// 		}
+// 		new_str = ft_strdup(str + j);
+// 			// printf("\n%d = %s\n", i, all_cmd[i]);
+// 		to_add = quote_clearer(&new_str, to_add,&check_split_expand, 0, env);
+// 	}
+// 	if (to_add)
+// 		stock = ft_strjoin_pars(stock, to_add);
+// 	else
+// 		stock[i] = '\0';
+// 	free(to_add);
+// 	// if (str)
+// 	// 	free(str);
+// 	return (stock);
+// }
 
+// char	*str_space_cuter(char	*str, char *tmp)
+// {
+// 	int		i;
+// 	int		j;
+// 	char	*stock;
+// 	char	*to_add;
+// 	int		check_split_expand;
+// 	char	*new_str;
 
-char	*quote_clearer(char **str, char *cleared, int	*check_split_expand)
+// 	(void )str;
+// 	i = 0;
+// 	j = 0;
+// 	check_split_expand = 0;
+// 	to_add = NULL;
+// 	new_str = NULL;
+// 	if (!tmp)
+// 		return (NULL);
+// 	stock = malloc (ft_strlen(tmp) + 1);
+// 	if (!stock)
+// 		return (NULL);
+// 	if (tmp[0] && (tmp[0] == ' ' || tmp[0] == '\t'))
+// 	{
+// 		while (tmp[j] == ' ' || tmp[j] == '\t')
+// 			j++;
+// 	}
+// 	while (tmp[j] && tmp[j] != ' ' && tmp[j] != '\t')
+// 		j++;
+// 	while (tmp[j] && (tmp[j] == ' ' || tmp[j] == '\t'))
+// 		j++;
+// 	while (tmp[j])
+// 	{
+// 		stock[i] = tmp[j];
+// 		i++;
+// 		if (tmp[j] == ' ' || tmp[j] == '\t')
+// 		{
+// 			while (tmp[j] == ' ' || tmp[j] == '\t')
+// 				j++;
+// 		}
+// 		else
+// 			j++;
+// 	}
+// 	stock[i] = '\0';
+// 	return (stock);
+// }
+
+char	*quote_clearer(char **str, char *cleared, int	*check_split_expand, int not_first, t_list *env)
 {
 	int		quote;
 	int		i;
 	int		j;
-	char	*tmp;
-	char	*tmp_cuted;
 
-	tmp_cuted = NULL;
+	(void) env;
+	(void) not_first;
 	j = 0;
 	i = 0;
 	quote = 0;
-	*check_split_expand = 0;
 	if (!str)
 		return (NULL);
 	if (!quote_checker(*str))
@@ -283,30 +382,7 @@ char	*quote_clearer(char **str, char *cleared, int	*check_split_expand)
 				quote = 0;
 				i++;
 			}
-			if ((*str)[i] == '$' && quote != 1)
-			{
-				cleared[j] = '\0';
-				tmp = converter(*str, &i);
-				if (quote == 0 && check_space(tmp))
-				{
-					tmp_cuted = tmp_cuter(tmp);
-					*str = str_cuter(*str, tmp);
-					// free(tmp);
-					if (tmp_cuted)
-						cleared = ft_strjoin(cleared, tmp_cuted);
-					free(tmp_cuted);
-					*check_split_expand = 1;
-					return (cleared);
-				}
-				// if (check_space(tmp) > 0)	
-				if (tmp)
-					cleared = ft_strjoin_pars(cleared, tmp);
-				while (cleared[j])
-					j++;
-				if (tmp)
-					free(tmp);
-			}
-			if (((*str)[i] == '\'' && quote == 2) || ((*str)[i] == '"' && quote == 1) || ((*str)[i] != '\'' && (*str)[i] != '"'))
+			else if (((*str)[i] == '\'' && quote == 2) || ((*str)[i] == '"' && quote == 1) || ((*str)[i] != '\'' && (*str)[i] != '"'))
 			{
 				cleared = ft_str_p_char(cleared, (*str)[i]);
 				j++;
@@ -317,7 +393,6 @@ char	*quote_clearer(char **str, char *cleared, int	*check_split_expand)
 		if (cleared[j - 1])
 			cleared[j] = '\0';
 	}
-	// else if(quote_checker(str) == 2)
 	else
 	{
 		while ((*str)[i])
@@ -328,6 +403,6 @@ char	*quote_clearer(char **str, char *cleared, int	*check_split_expand)
 		}
 		cleared[j] = '\0';
 	}
-	// printf("\n%s\n", cleared);
+	*check_split_expand = 0;
 	return (cleared);
 }

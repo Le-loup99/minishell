@@ -1,25 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lst_utils.c                                        :+:      :+:    :+:   */
+/*   ft_count_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
+/*   By: framanan <framanan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/22 17:46:09 by arakoto2          #+#    #+#             */
-/*   Updated: 2026/01/02 11:17:10 by arakoto2         ###   ########.fr       */
+/*   Created: 2025/10/27 13:10:17 by framanan          #+#    #+#             */
+/*   Updated: 2025/12/27 10:55:49 by framanan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int count_arg(char **str)
+int ft_count_line(char **str)
 {
     int i;
 
     i = 0;
-    if (!str)
-        return (0);
-    while(str[i])
+    while(str && str[i])
         i++;
-    return (i);
+    return(i);
 }

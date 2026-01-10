@@ -1,25 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lst_utils.c                                        :+:      :+:    :+:   */
+/*   take_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
+/*   By: framanan <framanan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/22 17:46:09 by arakoto2          #+#    #+#             */
-/*   Updated: 2026/01/02 11:17:10 by arakoto2         ###   ########.fr       */
+/*   Created: 2025/11/01 08:20:11 by framanan          #+#    #+#             */
+/*   Updated: 2025/12/26 15:18:20 by framanan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int count_arg(char **str)
+t_list	*take_env(char **env)
 {
-    int i;
-
-    i = 0;
-    if (!str)
-        return (0);
-    while(str[i])
-        i++;
-    return (i);
+	int i = 0;
+	t_list *lst = NULL;
+	char **temp;
+	while (env[i])
+	{
+		temp = ft_split_env(env[i++]);
+		env_lst_add_back(&lst, lstnew(temp[0], temp[1]));
+	}
+	return (lst);
 }

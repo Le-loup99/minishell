@@ -6,7 +6,7 @@
 /*   By: framanan <framanan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 10:21:35 by framanan          #+#    #+#             */
-/*   Updated: 2025/12/17 18:55:35 by framanan         ###   ########.fr       */
+/*   Updated: 2026/01/05 16:35:19 by framanan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char **take_path(char **env)
     path = ft_split(temp,':');
     free(temp);
     i = 0;
-    while (path[i])
+    while (path && path[i])
     {
         path[i] = ft_strjoin(path[i], "/");
         i++;

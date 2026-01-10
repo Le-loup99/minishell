@@ -3,43 +3,60 @@
 /*                                                        :::      ::::::::   */
 /*   ft_redir_out.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framanan <framanan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: arakoto2 <arakoto2@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 11:07:36 by framanan          #+#    #+#             */
-/*   Updated: 2025/12/22 17:53:43 by framanan         ###   ########.fr       */
+/*   Updated: 2026/01/09 09:28:00 by arakoto2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_redir_out(t_cmd *lst, char *path, char **env, int fd_temp)
+void	ft_redir_out(t_cmd *lst, char *path, char **env, int fd_temp, t_list *curr_env)
 {
-
-	while (lst->redir)
+	(void)fd_temp;
+	(void) env;
+	while (lst->redir_out)
 	{
-		if (lst->redir->redir_next)
+		if (lst->redir_out->redir_next)
 		{
-			open(lst->redir->file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			lst->redir = lst->redir->redir_next;
+			if(open(lst->redir_out->file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644) < 0)
+			{
+				ft_putstr_fd("minishell : ", 2);
+				ft_putstr_fd(lst->redir_out->file_name, 2);
+				ft_putendl_fd(" : Permision denied", 2);
+				return;
+			}
+			lst->redir_out = lst->redir_out->redir_next;
 		}
 		else
 		{
-			if(lst->redir->type == OUT)
+			if(lst->redir_out->type == OUT)
 			{
-
-				lst->redir->fd = open(lst->redir->file_name, O_WRONLY | O_CREAT | O_TRUNC,
+				lst->redir_out->fd = open(lst->redir_out->file_name, O_WRONLY | O_CREAT | O_TRUNC,
 						0644);
 			}
-			else if(lst->redir->type == APPEND)
+			if(lst->redir_out->type == APPEND)
 			{
-				lst->redir->fd = open(lst->redir->file_name, O_WRONLY | O_CREAT | O_APPEND,
-							0644);
+				lst->redir_out->fd = open(lst->redir_out->file_name, O_WRONLY | O_CREAT | O_TRUNC,
+						0644);
 			}
-			if(fd_temp != 0)
-				dup2(fd_temp, STDIN_FILENO);
-			dup2(lst->redir->fd, STDOUT_FILENO);
-			close(lst->redir->fd);
-			execve(path, lst->cmd, env);
+			if(lst->redir_out->fd < 0)
+			{
+				ft_putstr_fd("minishell : ", 2);
+				ft_putstr_fd(lst->redir_out->file_name, 2);
+				ft_putendl_fd(" : Permision denied", 2);
+				return;
+			}
+			// if(fd_temp != 0)
+			// 	dup2(fd_temp, STDIN_FILENO);
+			dup2(lst->redir_out->fd, STDOUT_FILENO);
+			close(lst->redir_out->fd);
+			if(lst->is_builtin)
+				ft_is_built_in(lst, &curr_env);
+			else
+				execve(path, lst->cmd, env);
+			exit(127);
 		}
 	}
 }
